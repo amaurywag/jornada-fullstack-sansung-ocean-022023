@@ -1,4 +1,18 @@
 const express = require("express");
+const { MongoClient } = require("mongodb");
+
+const DB_URL = "";
+const DB_NAME = "ocean-sansung-fullstack";
+
+async function main() {
+
+//Conexão com o banco de dados
+console.log("Conectando com o banco de dados...");
+const client = await MongoClient.connect(DB_URL);
+const db = client.db(DB_NAME);
+const collection = db.collection("itens");
+console.log("Banco de dados conectado com sucesso!");
+
 const app = express();
 
 //O que vier no body da requisição, está em JSON
@@ -21,10 +35,11 @@ const itens = ["Rick Sancges", "Morty Smith", "Summer Smith"];
 // CRUD -> Lista de informações
 
 // Endpoint Readl All 
-app.get("/item", function (req, res){
-  const id = req.params.id;
-  const item = itens[id - 1];
-  res.send(item);
+app.get("/item",async function (req, res){
+  const documentos = collection.find().toArray();
+  //const id = req.params.id;
+  //const item = itens[id - 1];
+  res.send(documentos);
 });
 
 //Endpoint Read Single Get by ID 
@@ -34,9 +49,15 @@ app.get("/item/:id", function (req, res) {
 
 //Endpoint Creat -> [POST] /item
 app.post("item/", function (req, res){
-  console.log(req.body);
-  res.send("Create")
+ // console.log(req.body);
+  const item = req.body;
+  itens.push(item.nome);
+  res.send("Item criado com sucesso!")
 });
 
 
-app.listen(3001);
+app.listen(3000);
+
+}
+
+main();
